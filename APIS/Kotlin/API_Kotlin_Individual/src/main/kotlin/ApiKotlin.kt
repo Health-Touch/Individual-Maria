@@ -33,11 +33,11 @@ fun main() {
 
 
     val vColaborador : Int? = repositorio.verificarColaborador(colaborador.email, colaborador.senha)
+    repositorio.buscarNome(colaborador.email, colaborador.senha, colaborador)
 
-    repositorio.buscarNome(colaborador.email, colaborador.senha)
 
-    if (vColaborador != null){
-        if (vColaborador != 0){
+    if (vColaborador != 0){
+        if (vColaborador != null){
             JOptionPane.showMessageDialog(null, """
                 Bem vindo ${colaborador.nome}!!!
                 Você está dentro do Sistema da Health Touch.
@@ -47,13 +47,15 @@ fun main() {
             while (true){
 
                 val opcao = JOptionPane.showInputDialog("""
-                        Escolha uma das opções abaixo
+                        Agora ${colaborador.nome },
+                        Escolha uma das opções abaixo : 
 
                         1 - Capturar Processos
                         2 - Listar Processos
                         3 - Ver Total de Processos Capturados
                         4 - Ver Total de Threads Capturados
-                        5 - Sair
+                        5 - Pesquisar Processo
+                        6 - Sair
 
 
                     """.trimIndent()).toInt()
@@ -83,12 +85,13 @@ fun main() {
                                 repositorio.buscarfkTipoMaquina(ip, processo)
                                 repositorio.buscarfkStatusMaquina(ip, processo)
 
-                                repositorio.completarProcesso(processo)
+                                repositorio.cadastrarProcesso(processo)
 
 
 
                             }
                         }
+
                         else{
                             JOptionPane.showMessageDialog(null, """
                                 IP errado você não está capturando!!
@@ -136,6 +139,7 @@ fun main() {
                             }
                         }
                     }
+                    5-> repositorio.pesquisarProcesso()
                     else -> break
                 }
             }
@@ -146,7 +150,7 @@ fun main() {
 
         }
     }
-    else{
+    else {
         JOptionPane.showMessageDialog(null, """
             Tente Novamente!!!
             Você não está dentro do Sistema da Health Touch.

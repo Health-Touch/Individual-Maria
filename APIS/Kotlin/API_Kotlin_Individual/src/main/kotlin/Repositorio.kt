@@ -6,21 +6,16 @@ import javax.swing.JOptionPane
 class Repositorio {
 
     lateinit var jdbcTemplate: JdbcTemplate
-    var colaborador1 = Colaborador()
-    val processo = Processo()
+
+    val looca = Looca()
+    val grupoProcesssos = looca.grupoDeProcessos
 
     fun iniciar() {
         jdbcTemplate = Conexao.jdbcTemplate!!
     }
 
 
-    fun completarProcesso(processos: Processo){
-
-        val looca = Looca()
-        val grupoProcesssos = looca.grupoDeProcessos
-
-
-
+    fun cadastrarProcesso(processos: Processo){
 
 
 
@@ -46,23 +41,39 @@ class Repositorio {
                         """.trimIndent()
             )
 
-            cadastrarProcessos(processos)
+
+            jdbcTemplate.update("""
+            insert into processo ( PID, nome,uso_cpu, uso_ram, total_processos, total_threads, dtHoraInsercao, fkMaquina, fkEmpresa, fkTipoMaquina, fkStatusMaquina) values
+           ( ${processos.PID},'${processos.nome}', ${processos.uso_cpu},  ${processos.uso_ram}, ${processos.total_processos},  ${processos.total_threads} , '${processos.dtHoraInsercao}', ${processos.fkMaquina},${processos.fkEmpresa}, ${processos.fkTipoMaquina}, ${processos.fkStatus})
+        """.trimIndent())
+
+
+
 
         }
 
 
     }
- private fun cadastrarProcessos(processo: Processo){
+
+    fun pesquisarProcesso(){
+
+        val pesquisa = JOptionPane.showInputDialog("Qual processo quer achar?")
+        val processosEncontrados = grupoProcesssos.processos.filter{
+            it.nome.contains(pesquisa)}
+
+        if (processosEncontrados.isEmpty()) {
+            println("Nenhum processo '$pesquisa' encontrado")
+        } else {
+            println("${processosEncontrados.size} processos '$pesquisa' encontrados:")
+            println()
+
+            processosEncontrados.forEach {
+                println("Processo:\r\r$it")
+            }
+        }
 
 
-        jdbcTemplate.update("""
-            insert into processo ( PID, nome,uso_cpu, uso_ram, total_processos, total_threads, dtHoraInsercao, fkMaquina, fkEmpresa, fkTipoMaquina, fkStatusMaquina) values
-           ( ${processo.PID},'${processo.nome}', ${processo.uso_cpu},  ${processo.uso_ram}, ${processo.total_processos},  ${processo.total_threads} , '${processo.dtHoraInsercao}', ${processo.fkMaquina},${processo.fkEmpresa}, ${processo.fkTipoMaquina}, ${processo.fkStatus})
-        """.trimIndent())
-
-     completarProcesso(processo)
-
- }
+    }
 
     fun buscaridMaquina(ip: Int, processo: Processo){
 
@@ -141,7 +152,7 @@ class Repositorio {
     }
 
 
-    fun buscarNome(email: String, senha: String){
+    fun buscarNome(email: String, senha: String, colaborador: Colaborador) {
         val nome = jdbcTemplate.queryForObject(
             """
                    select nome from Colaborador where email = '${email}' and senha = '${senha}';
@@ -149,7 +160,8 @@ class Repositorio {
         );
 
         if (nome != null) {
-            colaborador1.nome = nome
+           println(nome)
+            colaborador.nome = nome
         }
     }
 
