@@ -1,13 +1,4 @@
-import java.io.File
 
-class API_Python() {
-
-    lateinit var arquivo_python: Process
-
-    var sair = "True"
-
-    fun chamarApiPython(maquina: Maquina, processo: Processo) {
-       val codigoPython = """
 import psutil
 import time
 import platform
@@ -31,7 +22,7 @@ i = 0
 
 # Rodando o monitoramento
 while i == 0:
-    if True == $sair:
+    if True == False:
         uso_cpu = round(psutil.cpu_percent(interval=1), 2)
         uso_memoria = round(psutil.virtual_memory().percent, 2)
         data = datetime.datetime.now()
@@ -42,14 +33,14 @@ while i == 0:
                 '''
 
         insert = [
-            uso_cpu, data, 1,${processo.fkMaquina}, ${maquina.fkPlanoEmpresa}, ${processo.fkTipoMaquina}, ${processo.fkEmpresa}
+            uso_cpu, data, 1,1, 1, 1, 1
         ]
 
         cursor.execute(query, insert)
         conn.commit()
 
         insert = [
-            uso_memoria, data, 3, ${processo.fkMaquina}, ${maquina.fkPlanoEmpresa}, ${processo.fkTipoMaquina}, ${processo.fkEmpresa}
+            uso_memoria, data, 3, 1, 1, 1, 1
         ]
 
         cursor.execute(query, insert)
@@ -65,20 +56,3 @@ while i == 0:
         i = 1
         cursor.close()        
                 
-"""
-
-
-        val nomeArquivoPyDefault = "Api_Python.py"
-
-        File(nomeArquivoPyDefault).writeText(codigoPython)
-        arquivo_python = Runtime.getRuntime().exec("python $nomeArquivoPyDefault")
-
-
-
-
-    }
-
-fun encerrarPython() {
-    arquivo_python.destroy()
-}
-}

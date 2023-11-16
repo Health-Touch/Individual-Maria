@@ -2,7 +2,7 @@ import com.github.britooo.looca.api.core.Looca
 import org.springframework.jdbc.core.JdbcTemplate
 import java.time.LocalDateTime
 import javax.swing.JOptionPane
-
+import org.springframework.dao.EmptyResultDataAccessException
 class Repositorio {
 
     lateinit var jdbcTemplate: JdbcTemplate
@@ -105,6 +105,20 @@ class Repositorio {
             processo.fkEmpresa =fkEmpresa
         }
     }
+    fun buscarfkPlanoEmpresa(ip: Int, maquina: Maquina){
+
+
+
+        val fkPlanoEmpresa=  jdbcTemplate.queryForObject(
+            """
+                 select fkPlanoEmpresa from maquina where IP = ${ip};
+                """, Int::class.java
+        );
+
+        if (fkPlanoEmpresa != null) {
+            maquina.fkPlanoEmpresa = fkPlanoEmpresa
+        }
+    }
 
     fun buscarfkTipoMaquina(ip: Int, processo: Processo){
 
@@ -141,12 +155,14 @@ class Repositorio {
 
 
     fun verificarColaborador(email: String, senha: String) : Int?{
-
-        val colaborador = jdbcTemplate.queryForObject(
-            """
+        var colaborador: Int? = 0
+       try {
+           colaborador = jdbcTemplate.queryForObject(
+               """
                   select count(idColaborador) from Colaborador where email = '${email}' and senha = '${senha}';
                 """, Int::class.java
-        );
+           );
+       }      catch (e: EmptyResultDataAccessException) { colaborador = 0 }
 
       return colaborador
     }
@@ -179,14 +195,15 @@ class Repositorio {
 
 
     fun validarMaquina(ip: Int): Int? {
+        var maquina : Int? = 0
+        try {
 
-
-
-        val maquina=  jdbcTemplate.queryForObject(
+         maquina=  jdbcTemplate.queryForObject(
             """
                  select count(idMaquina) from maquina where IP = '${ip}';
                 """, Int::class.java
         );
+        } catch (e: EmptyResultDataAccessException) { maquina = 0 }
 
      return maquina
 
