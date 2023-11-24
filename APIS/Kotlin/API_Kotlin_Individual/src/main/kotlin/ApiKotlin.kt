@@ -64,7 +64,6 @@ fun main() {
 
                     """.trimIndent()).toInt()
 
-
                 when(opcao){
                     1 -> {
                       val ip =  JOptionPane.showInputDialog("""

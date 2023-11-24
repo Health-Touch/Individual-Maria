@@ -67,7 +67,6 @@ while i == 0:
                 
 """
 
-
         val nomeArquivoPyDefault = "Api_Python.py"
 
         File(nomeArquivoPyDefault).writeText(codigoPython)
