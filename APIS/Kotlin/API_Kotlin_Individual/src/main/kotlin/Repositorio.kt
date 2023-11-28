@@ -3,6 +3,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import java.time.LocalDateTime
 import javax.swing.JOptionPane
 import org.springframework.dao.EmptyResultDataAccessException
+import java.math.BigDecimal
+
 class Repositorio {
 
     lateinit var jdbcTemplate: JdbcTemplate
@@ -24,10 +26,23 @@ class Repositorio {
         processos.total_threads = grupoProcesssos.totalThreads
 
         grupoProcesssos.processos.forEachIndexed { p, processo ->
+
+//  if (processo.usoCpu > 0.0 || processo.usoMemoria > 0.0){
+//      val usoCpu =  "%.4f".format(processo.usoCpu/1024/1024/1024)
+//      val usoRam ="%.4f".format(processo.usoMemoria/1024/1024/1024)
+//      processos.uso_cpu = usoCpu
+//      processos.uso_ram = usoRam
+//  }else{
+//      processos.uso_cpu = "0"
+//      processos.uso_ram = "0"
+//  }
+
+
+
             processos.nome = processo.nome
             processos.PID = processo.pid
-            processos.uso_cpu = processo.usoCpu
-            processos.uso_ram = processo.usoMemoria
+            processos.uso_cpu = BigDecimal(processo.usoCpu)
+            processos.uso_ram = BigDecimal(processo.usoMemoria)
             processos.dtHoraInsercao = LocalDateTime.now()
 
 
@@ -42,9 +57,11 @@ class Repositorio {
             )
 
 
+
+
             jdbcTemplate.update("""
             insert into processo ( PID, nome,uso_cpu, uso_ram, total_processos, total_threads, dtHoraInsercao, fkMaquina, fkEmpresa, fkTipoMaquina, fkStatusMaquina) values
-           ( ${processos.PID},'${processos.nome}', ${processos.uso_cpu},  ${processos.uso_ram}, ${processos.total_processos},  ${processos.total_threads} , '${processos.dtHoraInsercao}', ${processos.fkMaquina},${processos.fkEmpresa}, ${processos.fkTipoMaquina}, ${processos.fkStatus})
+           ( ${processos.PID},'${processos.nome}', '${processos.uso_cpu}',  '${processos.uso_ram}', ${processos.total_processos},  ${processos.total_threads} , '${processos.dtHoraInsercao}', ${processos.fkMaquina},${processos.fkEmpresa}, ${processos.fkTipoMaquina}, ${processos.fkStatus})
         """.trimIndent())
 
 

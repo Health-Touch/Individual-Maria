@@ -22,7 +22,7 @@ i = 0
 
 # Rodando o monitoramento
 while i == 0:
-    if True == False:
+    if True == True:
         uso_cpu = round(psutil.cpu_percent(interval=1), 2)
         uso_memoria = round(psutil.virtual_memory().percent, 2)
         data = datetime.datetime.now()

@@ -1,3 +1,4 @@
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 class Processo {
@@ -5,8 +6,8 @@ class Processo {
     var idProcesso : Int = 0
     var PID : Int = 0
     var nome : String = ""
-    var uso_cpu :Double = 0.0
-    var uso_ram :Double = 0.0
+    var uso_cpu :BigDecimal= BigDecimal(0)
+    var uso_ram :BigDecimal= BigDecimal(0)
     var total_processos : Int = 0
     var total_threads : Int = 0
     var dtHoraInsercao  = LocalDateTime.now()
