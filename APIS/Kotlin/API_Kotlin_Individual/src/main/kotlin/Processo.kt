@@ -10,7 +10,7 @@ class Processo {
     var uso_ram :BigDecimal= BigDecimal(0)
     var total_processos : Int = 0
     var total_threads : Int = 0
-    var dtHoraInsercao  = LocalDateTime.now()
+    var dtHoraInsercao : String = ""
     var fkMaquina: Int = 0
     var fkEmpresa: Int = 0
     var fkStatus: Int = 0

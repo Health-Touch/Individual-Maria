@@ -4,16 +4,19 @@ import java.time.LocalDateTime
 import javax.swing.JOptionPane
 import org.springframework.dao.EmptyResultDataAccessException
 import java.math.BigDecimal
+import java.time.format.DateTimeFormatter
 
 class Repositorio {
 
     lateinit var jdbcTemplate: JdbcTemplate
+    var bdInterServer = Conexao.bdInterServer!!
 
     val looca = Looca()
     val grupoProcesssos = looca.grupoDeProcessos
 
     fun iniciar() {
         jdbcTemplate = Conexao.jdbcTemplate!!
+
     }
 
 
@@ -43,7 +46,9 @@ class Repositorio {
             processos.PID = processo.pid
             processos.uso_cpu = BigDecimal(processo.usoCpu)
             processos.uso_ram = BigDecimal(processo.usoMemoria)
-            processos.dtHoraInsercao = LocalDateTime.now()
+            processos.dtHoraInsercao = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            )
 
 
             println( """
@@ -62,6 +67,11 @@ class Repositorio {
             jdbcTemplate.update("""
             insert into processo ( PID, nome,uso_cpu, uso_ram, total_processos, total_threads, dtHoraInsercao, fkMaquina, fkEmpresa, fkTipoMaquina, fkStatusMaquina) values
            ( ${processos.PID},'${processos.nome}', '${processos.uso_cpu}',  '${processos.uso_ram}', ${processos.total_processos},  ${processos.total_threads} , '${processos.dtHoraInsercao}', ${processos.fkMaquina},${processos.fkEmpresa}, ${processos.fkTipoMaquina}, ${processos.fkStatus})
+        """.trimIndent())
+
+            bdInterServer.update("""
+            insert into processo (nome,PID,uso_cpu, uso_ram, total_processos, total_threads, dtHoraInsercao, fkMaquina, fkEmpresa, fkTipoMaquina, fkStatusMaquina) values
+           ( '${processos.nome}',${processos.PID}, '${processos.uso_cpu}',  '${processos.uso_ram}', ${processos.total_processos},  ${processos.total_threads} , '${processos.dtHoraInsercao}', ${processos.fkMaquina},${processos.fkEmpresa}, ${processos.fkTipoMaquina}, ${processos.fkStatus})
         """.trimIndent())
 
 
@@ -95,7 +105,7 @@ class Repositorio {
     fun buscaridMaquina(ip: Int, processo: Processo){
 
 
-        val idMaquina=  jdbcTemplate.queryForObject(
+        val idMaquina=  bdInterServer.queryForObject(
             """
                  select idMaquina from maquina where IP = ${ip};
                 """, Int::class.java
@@ -112,7 +122,7 @@ class Repositorio {
 
 
 
-        val fkEmpresa=  jdbcTemplate.queryForObject(
+        val fkEmpresa=  bdInterServer.queryForObject(
             """
                  select fkEmpresa from maquina where IP = ${ip};
                 """, Int::class.java
@@ -126,7 +136,7 @@ class Repositorio {
 
 
 
-        val fkPlanoEmpresa=  jdbcTemplate.queryForObject(
+        val fkPlanoEmpresa=  bdInterServer.queryForObject(
             """
                  select fkPlanoEmpresa from maquina where IP = ${ip};
                 """, Int::class.java
@@ -140,7 +150,7 @@ class Repositorio {
     fun buscarfkTipoMaquina(ip: Int, processo: Processo){
 
 
-        val fkTipoMaquina=  jdbcTemplate.queryForObject(
+        val fkTipoMaquina=  bdInterServer.queryForObject(
             """
                  select fkTipoMaquina from maquina where IP = ${ip};
                 """, Int::class.java
@@ -154,7 +164,7 @@ class Repositorio {
 
 
 
-        val  fkStatusMaquina=  jdbcTemplate.queryForObject(
+        val  fkStatusMaquina=  bdInterServer.queryForObject(
             """
                  select  fkStatusMaquina from maquina where IP = ${ip};
                 """, Int::class.java
@@ -174,7 +184,7 @@ class Repositorio {
     fun verificarColaborador(email: String, senha: String) : Int?{
         var colaborador: Int? = 0
        try {
-           colaborador = jdbcTemplate.queryForObject(
+           colaborador = bdInterServer.queryForObject(
                """
                   select count(idColaborador) from Colaborador where email = '${email}' and senha = '${senha}';
                 """, Int::class.java
@@ -186,7 +196,7 @@ class Repositorio {
 
 
     fun buscarNome(email: String, senha: String, colaborador: Colaborador) {
-        val nome = jdbcTemplate.queryForObject(
+        val nome = bdInterServer.queryForObject(
             """
                    select nome from Colaborador where email = '${email}' and senha = '${senha}';
                 """, String::class.java
@@ -200,7 +210,7 @@ class Repositorio {
 
     fun verificarProcesso() : Int?{
 
-        val processo = jdbcTemplate.queryForObject(
+        val processo = bdInterServer.queryForObject(
             """
                   select count(idProcesso) from Processo;
                 """, Int::class.java
@@ -215,7 +225,7 @@ class Repositorio {
         var maquina : Int? = 0
         try {
 
-         maquina=  jdbcTemplate.queryForObject(
+         maquina=  bdInterServer.queryForObject(
             """
                  select count(idMaquina) from maquina where IP = '${ip}';
                 """, Int::class.java
